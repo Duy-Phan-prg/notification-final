@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký thành công</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .highlight {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .highlight p {
+            margin: 0;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .features {
+            margin: 30px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: #666;
+        }
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            background: #e8f0ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .footer {
+            background: #f9f9f9;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎉 Chúc mừng!</h1>
+            <p>Đăng ký thành công</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">Xin chào <strong th:text="${name}">Nguyễn Văn A</strong>,</div>
+
+            <div class="message">
+                Cảm ơn bạn đã đăng ký tài khoản với chúng tôi! Chúng tôi rất vui được chào đón bạn gia nhập cộng đồng của mình.
+            </div>
+
+            <div class="highlight">
+                <p>✓ Tài khoản của bạn đã được kích hoạt</p>
+            </div>
+
+            <div class="message">
+                Bây giờ bạn có thể:
+            </div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">1</div>
+                    <div>Đăng nhập vào tài khoản của bạn</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">2</div>
+                    <div>Hoàn thành hồ sơ cá nhân</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">3</div>
+                    <div>Bắt đầu sử dụng dịch vụ của chúng tôi</div>
+                </div>
+            </div>
+
+            <center>
+                <a href="https://your-domain.com/login" class="cta-button">Đăng Nhập Ngay</a>
+            </center>
+
+            <div class="divider"></div>
+
+            <div class="message" style="font-size: 14px; color: #999;">
+                Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 Email Notification Service. Tất cả quyền được bảo lưu.</p>
+            <p>
+                <a href="#">Chính sách bảo mật</a> | 
+                <a href="#">Điều khoản dịch vụ</a> | 
+                <a href="#">Liên hệ</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

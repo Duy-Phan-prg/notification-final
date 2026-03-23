@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán thành công</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .receipt {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .receipt-title {
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #d1fae5;
+            color: #666;
+        }
+        .receipt-item:last-child {
+            border-bottom: none;
+        }
+        .receipt-item.total {
+            font-weight: 700;
+            color: #10b981;
+            font-size: 16px;
+            padding-top: 15px;
+            border-top: 2px solid #d1fae5;
+        }
+        .highlight {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .highlight p {
+            margin: 0;
+            color: #10b981;
+            font-weight: 600;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .features {
+            margin: 30px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: #666;
+        }
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            background: #d1fae5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #10b981;
+            font-weight: bold;
+        }
+        .footer {
+            background: #f9f9f9;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
+        }
+        .footer a {
+            color: #10b981;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>✓ Thanh toán thành công!</h1>
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">Xin chào <strong th:text="${name}">Nguyễn Văn A</strong>,</div>
+
+            <div class="message">
+                Chúng tôi xác nhận rằng thanh toán của bạn đã được xử lý thành công. Cảm ơn bạn đã tin tưởng chúng tôi!
+            </div>
+
+            <div class="highlight">
+                <p>✓ Giao dịch đã được xác nhận</p>
+            </div>
+
+            <div class="receipt">
+                <div class="receipt-title">Chi tiết giao dịch</div>
+                <div class="receipt-item">
+                    <span>Mã giao dịch:</span>
+                    <span>#TXN-2024-03-23</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Ngày thanh toán:</span>
+                    <span>23/03/2024</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Trạng thái:</span>
+                    <span style="color: #10b981; font-weight: 600;">Thành công</span>
+                </div>
+                <div class="receipt-item total">
+                    <span>Tổng tiền:</span>
+                    <span>Đã thanh toán</span>
+                </div>
+            </div>
+
+            <div class="message">
+                Bạn có thể:
+            </div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div>Xem chi tiết giao dịch trong tài khoản</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div>Tải hóa đơn điện tử</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div>Liên hệ hỗ trợ nếu có thắc mắc</div>
+                </div>
+            </div>
+
+            <center>
+                <a href="https://your-domain.com/account" class="cta-button">Xem Tài Khoản</a>
+            </center>
+
+            <div class="divider"></div>
+
+            <div class="message" style="font-size: 14px; color: #999;">
+                Nếu bạn không thực hiện giao dịch này, vui lòng liên hệ với chúng tôi ngay lập tức.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 Email Notification Service. Tất cả quyền được bảo lưu.</p>
+            <p>
+                <a href="#">Chính sách bảo mật</a> | 
+                <a href="#">Điều khoản dịch vụ</a> | 
+                <a href="#">Liên hệ</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

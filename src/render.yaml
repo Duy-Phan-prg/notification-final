@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: notification-service
+    runtime: docker
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        scope: run
+      - key: SPRING_DATASOURCE_USERNAME
+        scope: run
+      - key: SPRING_DATASOURCE_PASSWORD
+        scope: run
+      - key: SENDGRID_API_KEY
+        scope: run
