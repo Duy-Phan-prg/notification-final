@@ -30,7 +30,7 @@ public class EmailTemplate {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "message", nullable = false, columnDefinition = "LONGTEXT")
+    @Column(name = "message", nullable = false, columnDefinition = "TEXT")
     private String message;
 
     @Column(name = "created_at")

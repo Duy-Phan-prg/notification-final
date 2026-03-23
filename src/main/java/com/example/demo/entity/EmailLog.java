@@ -22,7 +22,7 @@ public class EmailLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = 500)
     private String email;
 
     @Column(name = "name")
@@ -36,7 +36,7 @@ public class EmailLog {
     @Enumerated(EnumType.STRING)
     private EmailStatus status;
 
-    @Column(name = "error_message")
+    @Column(name = "error_message", length = 1000)
     private String errorMessage;
 
     @Column(name = "created_at")
