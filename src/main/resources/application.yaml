@@ -33,7 +33,7 @@ springdoc:
   api-docs:
     path: /v3/api-docs
 
-    eureka:
+eureka:
       client:
         enabled: ${EUREKA_CLIENT_ENABLED:true}
         service-url:
@@ -42,7 +42,7 @@ springdoc:
         fetch-registry: ${EUREKA_CLIENT_ENABLED:true}
       instance:
         prefer-ip-address: false
-        hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost} // khi render no cho link
+        hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
         secure-port: 443
         secure-port-enabled: true
         non-secure-port-enabled: false
