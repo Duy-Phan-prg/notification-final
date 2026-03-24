@@ -8,8 +8,12 @@ import com.example.demo.repository.EmailLogRepository;
 import com.example.demo.repository.EmailTemplateRepository;
 import com.example.demo.service.EmailService;
 import com.sendgrid.SendGrid;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.Personalization;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendRegisterSuccess(String email, String name) {
-        EmailLog log = EmailLog.builder()
+        EmailLog emailLog = EmailLog.builder()
                 .email(email)
                 .name(name)
                 .type(EmailType.REGISTER_SUCCESS)
@@ -44,21 +48,21 @@ public class EmailServiceImpl implements EmailService {
             String htmlContent = template != null ? buildHtmlFromTemplate(template, name) : getDefaultRegisterTemplate(name);
 
             sendHtmlEmail(email, subject, htmlContent);
-            log.setStatus(EmailStatus.SUCCESS);
-            log("Email đăng ký thành công đã được gửi tới: " + email);
+            emailLog.setStatus(EmailStatus.SUCCESS);
+            log.info("Email đăng ký thành công đã được gửi tới: " + email);
 
         } catch (Exception e) {
-            log.setStatus(EmailStatus.FAIL);
-            log.setErrorMessage(e.getMessage());
-            log("Lỗi gửi email đăng ký tới " + email + ": " + e.getMessage());
+            emailLog.setStatus(EmailStatus.FAIL);
+            emailLog.setErrorMessage(e.getMessage());
+            log.info("Lỗi gửi email đăng ký tới " + email + ": " + e.getMessage());
         }
 
-        emailLogRepository.save(log);
+        emailLogRepository.save(emailLog);
     }
 
     @Override
     public void sendPaymentSuccess(String email, String name) {
-        EmailLog log = EmailLog.builder()
+        EmailLog emailLog = EmailLog.builder()
                 .email(email)
                 .name(name)
                 .type(EmailType.PAYMENT_SUCCESS)
@@ -70,16 +74,16 @@ public class EmailServiceImpl implements EmailService {
             String htmlContent = template != null ? buildHtmlFromTemplate(template, name) : getDefaultPaymentTemplate(name);
 
             sendHtmlEmail(email, subject, htmlContent);
-            log.setStatus(EmailStatus.SUCCESS);
-            log("Email thanh toán thành công đã được gửi tới: " + email);
+            emailLog.setStatus(EmailStatus.SUCCESS);
+            log.info("Email thanh toán thành công đã được gửi tới: " + email);
 
         } catch (Exception e) {
-            log.setStatus(EmailStatus.FAIL);
-            log.setErrorMessage(e.getMessage());
-            log("Lỗi gửi email thanh toán tới " + email + ": " + e.getMessage());
+            emailLog.setStatus(EmailStatus.FAIL);
+            emailLog.setErrorMessage(e.getMessage());
+            log.info("Lỗi gửi email thanh toán tới " + email + ": " + e.getMessage());
         }
 
-        emailLogRepository.save(log);
+        emailLogRepository.save(emailLog);
     }
 
     private String buildHtmlFromTemplate(EmailTemplate template, String name) {
@@ -136,29 +140,22 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlContent) throws Exception {
-        Mail mail = new Mail();
-        mail.setFrom(new com.sendgrid.helpers.mail.Email(FROM_EMAIL));
-        mail.setSubject(subject);
-        
-        com.sendgrid.helpers.mail.Personalization personalization = new com.sendgrid.helpers.mail.Personalization();
-        personalization.addTo(new com.sendgrid.helpers.mail.Email(to));
-        mail.addPersonalization(personalization);
-        
-        mail.addContent(new com.sendgrid.helpers.mail.Content("text/html", htmlContent));
+        Email from = new Email(FROM_EMAIL);
+        Email toEmail = new Email(to);
+        Content content = new Content("text/html", htmlContent);
+
+        Mail mail = new Mail(from, subject, toEmail, content);
 
         SendGrid sg = new SendGrid(sendGridApiKey);
-        com.sendgrid.Request request = new com.sendgrid.Request();
-        request.setMethod(com.sendgrid.Request.Method.POST);
+        Request request = new Request();
+        request.setMethod(Method.POST);
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
-        
-        com.sendgrid.Response response = sg.api(request);
+
+        Response response = sg.api(request);
         if (response.getStatusCode() >= 400) {
-            throw new Exception("SendGrid API error: " + response.getStatusCode() + " - " + response.getBody());
+            throw new Exception("SendGrid error: " + response.getStatusCode() + " - " + response.getBody());
         }
     }
 
-    private void log(String message) {
-        log.info(message);
-    }
 }
