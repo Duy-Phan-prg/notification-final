@@ -7,12 +7,13 @@ import com.example.demo.enums.EmailType;
 import com.example.demo.repository.EmailLogRepository;
 import com.example.demo.repository.EmailTemplateRepository;
 import com.example.demo.service.EmailService;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.Content;
+import com.sendgrid.helpers.mail.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,13 +21,15 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
     private EmailLogRepository emailLogRepository;
 
     @Autowired
     private EmailTemplateRepository emailTemplateRepository;
+
+    @Value("${spring.sendgrid.api-key}")
+    private String sendGridApiKey;
+
+    private static final String FROM_EMAIL = "phanduy.prg@gmail.com";
 
     @Override
     public void sendRegisterSuccess(String email, String name) {
@@ -133,13 +136,22 @@ public class EmailServiceImpl implements EmailService {
                 "</div></body></html>";
     }
 
-    private void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlContent, true);
-        mailSender.send(message);
+    private void sendHtmlEmail(String to, String subject, String htmlContent) throws Exception {
+        Email from = new Email(FROM_EMAIL);
+        Email toEmail = new Email(to);
+        Content content = new Content("text/html", htmlContent);
+        Mail mail = new Mail(from, subject, toEmail, content);
+
+        SendGrid sg = new SendGrid(sendGridApiKey);
+        com.sendgrid.Request request = new com.sendgrid.Request();
+        request.setMethod(com.sendgrid.Request.Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+        
+        com.sendgrid.Response response = sg.api(request);
+        if (response.getStatusCode() >= 400) {
+            throw new Exception("SendGrid API error: " + response.getStatusCode() + " - " + response.getBody());
+        }
     }
 
     private void log(String message) {
