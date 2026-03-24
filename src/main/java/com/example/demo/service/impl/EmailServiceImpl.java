@@ -9,8 +9,7 @@ import com.example.demo.repository.EmailTemplateRepository;
 import com.example.demo.service.EmailService;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.Content;
-import com.sendgrid.helpers.mail.Email;
+import com.sendgrid.helpers.mail.Personalization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,10 +136,15 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlContent) throws Exception {
-        Email from = new Email(FROM_EMAIL);
-        Email toEmail = new Email(to);
-        Content content = new Content("text/html", htmlContent);
-        Mail mail = new Mail(from, subject, toEmail, content);
+        Mail mail = new Mail();
+        mail.setFrom(new com.sendgrid.helpers.mail.Email(FROM_EMAIL));
+        mail.setSubject(subject);
+        
+        com.sendgrid.helpers.mail.Personalization personalization = new com.sendgrid.helpers.mail.Personalization();
+        personalization.addTo(new com.sendgrid.helpers.mail.Email(to));
+        mail.addPersonalization(personalization);
+        
+        mail.addContent(new com.sendgrid.helpers.mail.Content("text/html", htmlContent));
 
         SendGrid sg = new SendGrid(sendGridApiKey);
         com.sendgrid.Request request = new com.sendgrid.Request();
