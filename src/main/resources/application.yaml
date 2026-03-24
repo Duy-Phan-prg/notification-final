@@ -21,6 +21,26 @@ spring:
   sendgrid:
     api-key: ${SENDGRID_API_KEY:}
 
+  eureka:
+    client:
+      enabled: ${EUREKA_CLIENT_ENABLED:true}
+      service-url:
+        defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      register-with-eureka: ${EUREKA_CLIENT_ENABLED:true}
+      fetch-registry: ${EUREKA_CLIENT_ENABLED:true}
+    instance:
+      prefer-ip-address: false
+      hostname: ${RENDER_EXTERNAL_HOSTNAME:localhost}
+      secure-port: 443
+      secure-port-enabled: true
+      non-secure-port-enabled: false
+      home-page-url: https://${RENDER_EXTERNAL_HOSTNAME:localhost}/
+      status-page-url: https://${RENDER_EXTERNAL_HOSTNAME:localhost}/actuator/info
+      health-check-url: https://${RENDER_EXTERNAL_HOSTNAME:localhost}/actuator/health
+      lease-renewal-interval-in-seconds: 10
+      lease-expiration-duration-in-seconds: 30
+      instance-id: ${spring.application.name}:${RENDER_EXTERNAL_HOSTNAME:localhost}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
