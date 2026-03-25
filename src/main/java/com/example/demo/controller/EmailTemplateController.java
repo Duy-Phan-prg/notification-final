@@ -24,7 +24,6 @@ public class EmailTemplateController {
     private EmailTemplateService emailTemplateService;
 
     @PostMapping
-    @PermitAll
     @Operation(summary = "Tạo email template", description = "Tạo template email mới")
     public ResponseEntity<EmailTemplateResponse> create(@Valid @RequestBody EmailTemplateRequest request) {
         try {
@@ -36,7 +35,6 @@ public class EmailTemplateController {
     }
 
     @PutMapping("/{id}")
-    @PermitAll
     @Operation(summary = "Cập nhật email template", description = "Cập nhật nội dung email template")
     public ResponseEntity<EmailTemplateResponse> update(
             @PathVariable Long id,
@@ -50,7 +48,6 @@ public class EmailTemplateController {
     }
 
     @GetMapping("/{id}")
-    @PermitAll
     @Operation(summary = "Lấy email template theo ID", description = "Lấy chi tiết email template")
     public ResponseEntity<EmailTemplateResponse> getById(@PathVariable Long id) {
         try {
@@ -62,7 +59,6 @@ public class EmailTemplateController {
     }
 
     @GetMapping("/type/{type}")
-    @PermitAll
     @Operation(summary = "Lấy email template theo loại", description = "Lấy template theo EmailType")
     public ResponseEntity<EmailTemplateResponse> getByType(@PathVariable EmailType type) {
         try {
@@ -74,7 +70,6 @@ public class EmailTemplateController {
     }
 
     @GetMapping
-    @PermitAll
     @Operation(summary = "Lấy tất cả email templates", description = "Lấy danh sách tất cả templates")
     public ResponseEntity<List<EmailTemplateResponse>> getAll() {
         List<EmailTemplateResponse> responses = emailTemplateService.getAll();
@@ -82,7 +77,6 @@ public class EmailTemplateController {
     }
 
     @DeleteMapping("/{id}")
-    @PermitAll
     @Operation(summary = "Xóa email template", description = "Xóa template theo ID")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
