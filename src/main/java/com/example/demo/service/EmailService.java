@@ -5,4 +5,6 @@ public interface EmailService {
     void sendRegisterSuccess(String email, String name);
 
     void sendPaymentSuccess(String email, String name);
+
+    void sendOrderSuccess(String email, String name);
 }

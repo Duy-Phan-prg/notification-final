@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt hàng thành công</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); overflow: hidden; }
+
+        /* Đổi màu Gradient sang Cam/Vàng cho Order */
+        .header { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: white; padding: 40px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 14px; }
+
+        .content { padding: 40px 30px; }
+        .greeting { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; }
+        .message { color: #666; margin-bottom: 30px; line-height: 1.8; }
+
+        /* Đổi màu highlight theo tông cam */
+        .highlight { background: #fff5eb; border-left: 4px solid #fda085; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .highlight p { margin: 0; color: #f5845c; font-weight: 600; }
+
+        .cta-button { display: inline-block; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; transition: transform 0.3s ease; }
+        .cta-button:hover { transform: translateY(-2px); }
+        .footer { background: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #eee; font-size: 12px; color: #999; }
+        .footer a { color: #f5845c; text-decoration: none; }
+        .divider { height: 1px; background: #eee; margin: 30px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📦 Đặt hàng thành công!</h1>
+        <p>Đơn hàng của bạn đã được ghi nhận</p>
+    </div>
+
+    <div class="content">
+        <div class="greeting">Xin chào <strong th:text="${name}">Nguyễn Văn A</strong>,</div>
+
+        <div class="message">
+            Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi! Đơn hàng của bạn đã được hệ thống ghi nhận và đang trong quá trình xử lý.
+        </div>
+
+        <div class="highlight">
+            <p>Mã đơn hàng: <span th:text="${orderCode}">#ORD-123456</span></p>
+            <p>Tổng tiền: <span th:text="${totalAmount}">500,000 VNĐ</span></p>
+        </div>
+
+        <div class="message">
+            Chúng tôi sẽ thông báo cho bạn ngay khi đơn hàng được bàn giao cho đơn vị vận chuyển. Bạn có thể theo dõi tiến độ đơn hàng bằng cách nhấn vào nút bên dưới:
+        </div>
+
+        <center>
+            <a th:href="${trackingUrl}" class="cta-button">Theo Dõi Đơn Hàng</a>
+        </center>
+
+        <div class="divider"></div>
+
+        <div class="message" style="font-size: 14px; color: #999;">
+            Nếu bạn cần hỗ trợ, vui lòng trả lời trực tiếp email này hoặc liên hệ hotline của chúng tôi.
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 Cửa hàng của chúng tôi. Tất cả quyền được bảo lưu.</p>
+        <p>
+            <a href="#">Chính sách bảo mật</a> |
+            <a href="#">Điều khoản dịch vụ</a> |
+            <a href="#">Liên hệ</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

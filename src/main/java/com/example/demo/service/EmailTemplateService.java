@@ -6,7 +6,8 @@ import com.example.demo.enums.EmailType;
 
 import java.util.List;
 
-public interface EmailTemplateService {
+public interface
+EmailTemplateService {
     
     EmailTemplateResponse create(EmailTemplateRequest request);
     

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
@@ -86,6 +87,58 @@ public class EmailServiceImpl implements EmailService {
         emailLogRepository.save(emailLog);
     }
 
+    @Override
+    public void sendOrderSuccess(String email, String name) {
+        EmailLog emailLog = EmailLog.builder()
+                .email(email)
+                .name(name)
+                .type(EmailType.ORDER_SUCCESS)
+                .build();
+
+        try {
+            EmailTemplate template = emailTemplateRepository.findByType(EmailType.ORDER_SUCCESS).orElse(null);
+
+            String subject = template != null ? template.getSubject() : "Xác nhận đặt hàng thành công";
+            String htmlContent;
+
+            if (template != null) {
+                htmlContent = template.getMessage().replace("{{name}}", name);
+            } else {
+                htmlContent = getDefaultOrderTemplate(name);
+            }
+
+            sendHtmlEmail(email, subject, htmlContent);
+
+            emailLog.setStatus(EmailStatus.SUCCESS);
+            log.info("Email đặt hàng thành công đã được gửi tới: " + email);
+
+        } catch (Exception e) {
+            emailLog.setStatus(EmailStatus.FAIL);
+            emailLog.setErrorMessage(e.getMessage());
+            log.error("Lỗi gửi email đặt hàng tới " + email + ": " + e.getMessage());
+        }
+
+        emailLogRepository.save(emailLog);
+    }
+
+    private String getDefaultOrderTemplate(String name) {
+        return "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"><style>" +
+                "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:#f5f5f5;margin:0;padding:0;}" +
+                ".container{max-width:600px;margin:20px auto;background:white;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;}" +
+                ".header{background:linear-gradient(135deg,#f6d365 0%,#fda085 100%);color:white;padding:40px 20px;text-align:center;}" +
+                ".header h1{margin:0;font-size:28px;font-weight:700;}" +
+                ".content{padding:40px 30px;}" +
+                ".greeting{font-size:18px;font-weight:600;color:#333;margin-bottom:20px;}" +
+                ".message{color:#666;margin-bottom:30px;line-height:1.8;}" +
+                ".footer{background:#f9f9f9;padding:20px 30px;text-align:center;border-top:1px solid #eee;font-size:12px;color:#999;}" +
+                "</style></head><body><div class=\"container\"><div class=\"header\"><h1>📦 Đặt hàng thành công!</h1><p>Đơn hàng của bạn đã được ghi nhận</p></div>" +
+                "<div class=\"content\"><div class=\"greeting\">Xin chào <strong>" + name + "</strong>,</div>" +
+                "<div class=\"message\">Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi! Đơn hàng của bạn đã được hệ thống ghi nhận và đang trong quá trình xử lý.</div>" +
+                "<div class=\"message\">Chúng tôi sẽ sớm liên hệ lại hoặc thông báo cho bạn khi đơn hàng được bàn giao cho đơn vị vận chuyển.</div></div>" +
+                "<div class=\"footer\"><p>© 2024 Email Notification Service. Tất cả quyền được bảo lưu.</p></div>" +
+                "</div></body></html>";
+    }
+
     private String buildHtmlFromTemplate(EmailTemplate template, String name) {
         return "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"><style>" +
                 "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:#f5f5f5;margin:0;padding:0;}" +
@@ -138,6 +191,7 @@ public class EmailServiceImpl implements EmailService {
                 "<div class=\"footer\"><p>© 2024 Email Notification Service. Tất cả quyền được bảo lưu.</p></div>" +
                 "</div></body></html>";
     }
+
 
     private void sendHtmlEmail(String to, String subject, String htmlContent) throws Exception {
         Email from = new Email(FROM_EMAIL);

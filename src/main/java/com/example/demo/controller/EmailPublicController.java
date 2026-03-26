@@ -46,4 +46,16 @@ public class EmailPublicController {
                     .body(new SendEmailResponse(EmailStatus.FAIL, "Lỗi gửi email: " + e.getMessage()));
         }
     }
+
+    @PostMapping("/send-order-success")
+    @Operation(summary = "Gửi email đặt hàng thành công", description = "Gửi email thông báo khi user đặt hàng thành công")
+    public ResponseEntity<SendEmailResponse> sendOrderSuccessEmail(@Valid @RequestBody SendEmailRequest request) {
+        try {
+            emailService.sendOrderSuccess(request.getEmail(), request.getName());
+            return ResponseEntity.ok(new SendEmailResponse(EmailStatus.SUCCESS, "Email đặt hàng thành công đã được gửi"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new SendEmailResponse(EmailStatus.FAIL, "Lỗi gửi email: " + e.getMessage()));
+        }
+    }
 }
