@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.request.SendCouponEmailRequest;
 import com.example.demo.dto.request.SendEmailRequest;
 import com.example.demo.dto.response.SendEmailResponse;
 import com.example.demo.enums.EmailStatus;
@@ -53,6 +54,18 @@ public class EmailPublicController {
         try {
             emailService.sendOrderSuccess(request.getEmail(), request.getName());
             return ResponseEntity.ok(new SendEmailResponse(EmailStatus.SUCCESS, "Email đặt hàng thành công đã được gửi"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new SendEmailResponse(EmailStatus.FAIL, "Lỗi gửi email: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/send-new-coupon")
+    @Operation(summary = "Gửi email tặng mã giảm giá", description = "Gửi email thông báo coupon cho user dựa theo hạng thành viên")
+    public ResponseEntity<SendEmailResponse> sendNewCouponEmail(@Valid @RequestBody SendCouponEmailRequest request) {
+        try {
+            emailService.sendAddNewCoupon(request.getEmail(), request.getName(), request.getCoupon());
+            return ResponseEntity.ok(new SendEmailResponse(EmailStatus.SUCCESS, "Email thông báo coupon đã được gửi"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new SendEmailResponse(EmailStatus.FAIL, "Lỗi gửi email: " + e.getMessage()));

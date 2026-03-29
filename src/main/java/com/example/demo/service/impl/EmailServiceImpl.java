@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.dto.response.CouponResponse;
 import com.example.demo.entity.EmailLog;
 import com.example.demo.entity.EmailTemplate;
 import com.example.demo.enums.EmailStatus;
@@ -120,7 +121,90 @@ public class EmailServiceImpl implements EmailService {
 
         emailLogRepository.save(emailLog);
     }
+    // 1. Thêm method Override
+    @Override
+    public void sendAddNewCoupon(String email, String name, CouponResponse coupon) {
+        EmailLog emailLog = EmailLog.builder()
+                .email(email)
+                .name(name)
+                .type(EmailType.ADD_NEW_COUPON)
+                .build();
 
+        try {
+            EmailTemplate template = emailTemplateRepository.findByType(EmailType.ADD_NEW_COUPON).orElse(null);
+
+            String subject = template != null ? template.getSubject() : "Mã giảm giá đặc biệt dành riêng cho bạn!";
+            String htmlContent;
+
+            // Xử lý giá trị hiển thị giảm giá
+            String discountDisplay = coupon.getDiscountType().equalsIgnoreCase("PERCENTAGE")
+                    ? coupon.getDiscountValue() + "%"
+                    : coupon.getDiscountValue() + " VNĐ";
+
+            if (template != null) {
+                // Thay thế các placeholder trong DB template
+                String message = template.getMessage()
+                        .replace("{{name}}", name)
+                        .replace("{{code}}", coupon.getCode())
+                        .replace("{{discount}}", discountDisplay)
+                        .replace("{{minOrderValue}}", String.valueOf(coupon.getMinOrderValue()));
+
+                // Bao bọc trong layout HTML cơ bản (giống cách hàm buildHtmlFromTemplate làm)
+                htmlContent = "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"><style>" +
+                        "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:#f5f5f5;margin:0;padding:0;}" +
+                        ".container{max-width:600px;margin:20px auto;background:white;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;}" +
+                        ".header{background:linear-gradient(135deg,#ff9a9e 0%,#fecfef 99%,#fecfef 100%);color:#333;padding:40px 20px;text-align:center;}" +
+                        ".content{padding:40px 30px;}" +
+                        ".footer{background:#f9f9f9;padding:20px 30px;text-align:center;border-top:1px solid #eee;font-size:12px;color:#999;}" +
+                        "</style></head><body><div class=\"container\"><div class=\"header\"><h1>" + template.getTitle() + "</h1></div>" +
+                        "<div class=\"content\">" + message + "</div>" +
+                        "<div class=\"footer\"><p>© 2024 Email Notification Service.</p></div></div></body></html>";
+            } else {
+                htmlContent = getDefaultAddNewCouponTemplate(name, coupon, discountDisplay);
+            }
+
+            sendHtmlEmail(email, subject, htmlContent);
+
+            emailLog.setStatus(EmailStatus.SUCCESS);
+            log.info("Email thông báo coupon đã được gửi tới: " + email);
+            emailLogRepository.save(emailLog);
+        } catch (Exception e) {
+            emailLog.setStatus(EmailStatus.FAIL);
+            emailLog.setErrorMessage(e.getMessage());
+            log.error("Lỗi gửi email coupon tới " + email + ": " + e.getMessage());
+            emailLogRepository.save(emailLog);
+
+            // 3. QUAN TRỌNG: Ném lỗi ra ngoài để Controller biết mà trả về HTTP 500
+            throw new RuntimeException("Hệ thống gửi mail gặp sự cố: " + e.getMessage());
+        }
+    
+    }
+
+    // 2. Thêm HTML Template mặc định cực đẹp cho Coupon
+    private String getDefaultAddNewCouponTemplate(String name, CouponResponse coupon, String discountDisplay) {
+        return "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"><style>" +
+                "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:#f5f5f5;margin:0;padding:0;}" +
+                ".container{max-width:600px;margin:20px auto;background:white;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;}" +
+                ".header{background:linear-gradient(135deg,#ff0844 0%,#ffb199 100%);color:white;padding:40px 20px;text-align:center;}" +
+                ".header h1{margin:0;font-size:28px;font-weight:700;}" +
+                ".content{padding:40px 30px;text-align:center;}" +
+                ".greeting{font-size:18px;font-weight:600;color:#333;margin-bottom:20px;text-align:left;}" +
+                ".coupon-box{background:#fdfbfb;border:2px dashed #ff0844;border-radius:10px;padding:20px;margin:30px 0;}" +
+                ".code{font-size:32px;font-weight:bold;color:#ff0844;letter-spacing:2px;margin:10px 0;}" +
+                ".desc{color:#666;font-size:15px;margin-bottom:5px;}" +
+                ".footer{background:#f9f9f9;padding:20px 30px;text-align:center;border-top:1px solid #eee;font-size:12px;color:#999;}" +
+                "</style></head><body><div class=\"container\"><div class=\"header\"><h1>🎁 Quà Tặng Đặc Quyền!</h1><p>Dành riêng cho hạng thành viên " + coupon.getMinTier() + "</p></div>" +
+                "<div class=\"content\"><div class=\"greeting\">Xin chào <strong>" + name + "</strong>,</div>" +
+                "<p>Để tri ân bạn đã đồng hành, chúng tôi gửi tặng bạn một mã giảm giá đặc biệt.</p>" +
+                "<div class=\"coupon-box\">" +
+                "<div class=\"desc\">Giảm giá lên đến <strong>" + discountDisplay + "</strong></div>" +
+                "<div class=\"code\">" + coupon.getCode() + "</div>" +
+                "<div class=\"desc\">Áp dụng cho đơn từ " + coupon.getMinOrderValue() + " VNĐ</div>" +
+                "</div>" +
+                "<p><i>Lưu ý: Mã có hạn sử dụng, hãy nhanh tay sử dụng trước khi hết hạn!</i></p></div>" +
+                "<div class=\"footer\"><p>© 2024 Email Notification Service. Tất cả quyền được bảo lưu.</p></div>" +
+                "</div></body></html>";
+    }
     private String getDefaultOrderTemplate(String name) {
         return "<!DOCTYPE html><html lang=\"vi\"><head><meta charset=\"UTF-8\"><style>" +
                 "body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;background:#f5f5f5;margin:0;padding:0;}" +
