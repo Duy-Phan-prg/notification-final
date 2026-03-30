@@ -7,6 +7,7 @@ import com.example.demo.service.EmailTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notification-service/templates")
 @Tag(name = "Email Template API", description = "API để quản lý email templates")
+@Slf4j
 public class EmailTemplateController {
 
     @Autowired
@@ -30,6 +32,7 @@ public class EmailTemplateController {
             EmailTemplateResponse response = emailTemplateService.create(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
+            log.error("Error creating template: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
