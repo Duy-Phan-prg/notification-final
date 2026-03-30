@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.request.EmailTemplateRequest;
 import com.example.demo.dto.response.EmailTemplateResponse;
 import com.example.demo.enums.EmailType;
+import com.example.demo.repository.EmailTemplateRepository;
 import com.example.demo.service.EmailTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,15 +26,25 @@ public class EmailTemplateController {
     @Autowired
     private EmailTemplateService emailTemplateService;
 
+    @Autowired
+    private EmailTemplateRepository emailTemplateRepository;
+
     @PostMapping
     @Operation(summary = "Tạo email template", description = "Tạo template email mới")
-    public ResponseEntity<EmailTemplateResponse> create(@Valid @RequestBody EmailTemplateRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody EmailTemplateRequest request) {
         try {
+            // Check if template already exists
+            if (emailTemplateRepository.findByType(request.getType()).isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ErrorResponse("Template cho loại " + request.getType() + " đã tồn tại"));
+            }
+            
             EmailTemplateResponse response = emailTemplateService.create(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             log.error("Error creating template: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Lỗi tạo template: " + e.getMessage()));
         }
     }
 
