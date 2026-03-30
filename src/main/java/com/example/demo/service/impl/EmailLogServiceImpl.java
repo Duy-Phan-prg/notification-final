@@ -3,6 +3,8 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.response.EmailLogResponse;
 import com.example.demo.dto.response.EmailStatisticsResponse;
 import com.example.demo.entity.EmailLog;
+import com.example.demo.enums.EmailStatus;
+import com.example.demo.enums.EmailType;
 import com.example.demo.repository.EmailLogRepository;
 import com.example.demo.service.EmailLogService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +36,26 @@ public class EmailLogServiceImpl implements EmailLogService {
 
     @Override
     public Page<EmailLogResponse> getLogsByType(String type, Pageable pageable) {
-        return emailLogRepository.findByType(type, pageable)
-                .map(this::convertToDTO);
+        try {
+            EmailType emailType = EmailType.valueOf(type.toUpperCase());
+            return emailLogRepository.findByType(emailType, pageable)
+                    .map(this::convertToDTO);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid email type: " + type);
+            return Page.empty(pageable);
+        }
     }
 
     @Override
     public Page<EmailLogResponse> getLogsByStatus(String status, Pageable pageable) {
-        return emailLogRepository.findByStatus(status, pageable)
-                .map(this::convertToDTO);
+        try {
+            EmailStatus emailStatus = EmailStatus.valueOf(status.toUpperCase());
+            return emailLogRepository.findByStatus(emailStatus, pageable)
+                    .map(this::convertToDTO);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid email status: " + status);
+            return Page.empty(pageable);
+        }
     }
 
     @Override

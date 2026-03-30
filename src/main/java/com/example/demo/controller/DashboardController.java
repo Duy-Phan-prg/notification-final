@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/api/notification-service/dashboard")
 public class DashboardController {
-
+    //Done
     @Autowired
     private EmailLogService emailLogService;
 
