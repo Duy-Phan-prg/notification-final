@@ -2,6 +2,9 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.response.EmailLogResponse;
 import com.example.demo.dto.response.EmailStatisticsResponse;
+import com.example.demo.dto.response.ErrorResponse;
+import com.example.demo.enums.EmailStatus;
+import com.example.demo.enums.EmailType;
 import com.example.demo.service.EmailLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,27 +58,51 @@ public class EmailLogController {
     }
 
     @GetMapping("/by-type")
-    @Operation(summary = "Lấy email logs theo loại", description = "Lấy danh sách email logs theo loại (REGISTER_SUCCESS, PAYMENT_SUCCESS)")
-    public ResponseEntity<Page<EmailLogResponse>> getLogsByType(
+    @Operation(summary = "Lấy email logs theo loại", description = "Lấy danh sách email logs theo loại (REGISTER_SUCCESS, PAYMENT_SUCCESS, ORDER_SUCCESS, ADD_NEW_COUPON)")
+    public ResponseEntity<?> getLogsByType(
             @RequestParam String type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<EmailLogResponse> logs = emailLogService.getLogsByType(type, pageable);
-        return ResponseEntity.ok(logs);
+        try {
+            // Validate type
+            try {
+                EmailType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("Loại email không hợp lệ. Các loại hợp lệ: REGISTER_SUCCESS, PAYMENT_SUCCESS, ORDER_SUCCESS, ADD_NEW_COUPON"));
+            }
+            
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<EmailLogResponse> logs = emailLogService.getLogsByType(type, pageable);
+            return ResponseEntity.ok(logs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Lỗi lấy logs: " + e.getMessage()));
+        }
     }
 
     @GetMapping("/by-status")
     @Operation(summary = "Lấy email logs theo trạng thái", description = "Lấy danh sách email logs theo trạng thái (SUCCESS, FAIL)")
-    public ResponseEntity<Page<EmailLogResponse>> getLogsByStatus(
+    public ResponseEntity<?> getLogsByStatus(
             @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<EmailLogResponse> logs = emailLogService.getLogsByStatus(status, pageable);
-        return ResponseEntity.ok(logs);
+        try {
+            // Validate status
+            try {
+                EmailStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("Trạng thái không hợp lệ. Các trạng thái hợp lệ: SUCCESS, FAIL"));
+            }
+            
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<EmailLogResponse> logs = emailLogService.getLogsByStatus(status, pageable);
+            return ResponseEntity.ok(logs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Lỗi lấy logs: " + e.getMessage()));
+        }
     }
 
     @GetMapping("/statistics")
