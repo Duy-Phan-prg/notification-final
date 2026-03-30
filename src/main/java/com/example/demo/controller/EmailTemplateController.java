@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.request.EmailTemplateRequest;
 import com.example.demo.dto.response.EmailTemplateResponse;
+import com.example.demo.dto.response.ErrorResponse;
 import com.example.demo.enums.EmailType;
 import com.example.demo.repository.EmailTemplateRepository;
 import com.example.demo.service.EmailTemplateService;
